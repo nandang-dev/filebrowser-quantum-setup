@@ -17,7 +17,7 @@ Web file manager untuk meng-upload dan mengelola file model deteksi (`.onnx`) ya
 
 | File | Isi |
 |---|---|
-| `docker-compose.yml` | Service `filebrowser`, volume folder model + database, health check |
+| `docker-compose.yaml` | Service `filebrowser`, volume folder model + database, health check |
 | `config.yaml` | Format **v1.5.x (stable)**: satu source `/srv`, login password (min. 12 karakter), tanpa signup |
 | `.env.example` | Variabel untuk menjalankan lokal |
 
