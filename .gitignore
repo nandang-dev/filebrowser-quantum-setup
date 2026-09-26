@@ -1,0 +1,4 @@
+.env
+*.onnx
+.DS_Store
+.localtest/
