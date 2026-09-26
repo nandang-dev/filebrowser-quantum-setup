@@ -1,4 +1,5 @@
-.env
 *.onnx
 .DS_Store
 .localtest/
+config.bat
+node_modules
