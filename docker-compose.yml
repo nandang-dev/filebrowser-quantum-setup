@@ -1,0 +1,28 @@
+# FileBrowser Quantum untuk mengelola file model deteksi (.onnx) Stack Inspection API.
+# Deploy di Coolify: New Resource → Docker Compose → repo ini. Lihat README.md.
+services:
+  filebrowser:
+    # Image resmi (https://github.com/gtsteffaniak/filebrowser, Apache-2.0).
+    # Update: ganti tag ke versi baru, commit, lalu redeploy.
+    image: gtstef/filebrowser:stable
+    restart: unless-stopped
+    environment:
+      # Coolify: domain dipetakan ke port 80 container
+      - SERVICE_FQDN_FILEBROWSER_80
+      # Password admin dari Environment Variables Coolify (JANGAN ditulis di repo).
+      # Direset ke nilai ini setiap start, jadi kalau lupa cukup lihat/ganti di Coolify lalu restart.
+      - FILEBROWSER_ADMIN_PASSWORD=${FILEBROWSER_ADMIN_PASSWORD:?isi FILEBROWSER_ADMIN_PASSWORD di Coolify}
+      - FILEBROWSER_CONFIG=/home/filebrowser/config/config.yaml
+      - FILEBROWSER_DATABASE=/home/filebrowser/db/database.db
+    volumes:
+      # Folder model yang sama di-mount READ-ONLY ke Stack Inspection API (/app/models)
+      - ${MODELS_HOST_DIR:-/data/stack-inspection/models}:/srv
+      # Database akun & pengaturan FileBrowser
+      - ${FILEBROWSER_DB_HOST_DIR:-/data/filebrowser-quantum}:/home/filebrowser/db
+      # Konfigurasi dari repo ini
+      - ./config.yaml:/home/filebrowser/config/config.yaml:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
