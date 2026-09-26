@@ -18,12 +18,15 @@ Web file manager untuk meng-upload dan mengelola file model deteksi (`.onnx`) ya
 | File | Isi |
 |---|---|
 | `docker-compose.yaml` | Service `filebrowser`, volume folder model + database, health check |
-| `config.yaml` | Format **v1.5.x (stable)**: satu source `/srv`, login password (min. 12 karakter), tanpa signup |
 | `.env.example` | Variabel untuk menjalankan lokal |
 
-> Dokumentasi online dan branch `main` upstream memakai format konfigurasi **v2 (beta)**, misalnya blok
-> `http:`. Format itu **tidak dikenali** image `stable` dan membuat container gagal start. Saat meng-upgrade ke
-> v2, sesuaikan `config.yaml`.
+Konfigurasi memakai **config bawaan image** `stable`: satu source `/srv`, login password, pendaftaran akun
+mati. Tidak ada file config di repo, karena bind mount file relatif (`./config.yaml`) di Coolify ter-mount
+**kosong** sehingga FileBrowser gagal start (`Settings.Server.Sources ... required`).
+
+> Jika nanti butuh kustomisasi, gunakan format config **v1.5.x** (lihat `backend/config.yaml` pada tag
+> `v1.5.6-stable` upstream), bukan format v2 (beta) di dokumentasi online. Pasang lewat fitur file mount
+> Coolify (Persistent Storage → File Mount) agar isinya benar-benar ikut.
 
 ## Deploy di Coolify
 
@@ -34,7 +37,7 @@ Web file manager untuk meng-upload dan mengelola file model deteksi (`.onnx`) ya
    ```
    FileBrowser berjalan sebagai user `1000`; tanpa langkah ini muncul `permission denied`.
 2. **New Resource → Docker Compose** → pilih repo ini (branch default) → Save.
-3. **Environment Variables**: isi `FILEBROWSER_ADMIN_PASSWORD` (min. 12 karakter). Simpan juga di password manager.
+3. **Environment Variables**: isi `FILEBROWSER_ADMIN_PASSWORD` (disarankan min. 12 karakter). Simpan juga di password manager.
 4. **Domain**: di pengaturan service `filebrowser`, isi `https://files.bagdja.com:80`
    (`:80` = port di dalam container, tidak muncul di browser). DNS `A files → IP VPS` harus sudah aktif.
 5. **Deploy**. Status harus *Running (healthy)*. Buka `https://files.bagdja.com`, login `admin` + password langkah 3.
@@ -80,5 +83,6 @@ Di Mac (Colima/Docker Desktop), folder host harus berada di bawah `/Users/...` s
 
 ## Status pengujian
 
-Diuji lokal (Colima) dengan `gtstef/filebrowser:stable` v1.5.x: container *healthy*, config diterima, login
-admin dari env berhasil (200), password salah ditolak (401), folder `carton-v1` terlihat di `/srv`.
+Diuji lokal (Colima) dengan `gtstef/filebrowser:stable` v1.5.x: container *healthy*, login admin dari env
+berhasil (200), password salah ditolak (401), folder `carton-v1` terlihat di `/srv`. Di Coolify, mount
+`./config.yaml` ternyata kosong → config file dihapus, memakai config bawaan image.
