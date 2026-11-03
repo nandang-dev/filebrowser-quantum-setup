@@ -3,8 +3,9 @@
 services:
   filebrowser:
     # Image resmi (https://github.com/gtsteffaniak/filebrowser, Apache-2.0).
-    # Update: ganti tag ke versi baru, commit, lalu redeploy.
-    image: gtstef/filebrowser:stable
+    # Versi DIKUNCI: tag `stable` sudah pindah ke v2 (format config & env berbeda,
+    # FILEBROWSER_DATABASE ditolak → FATAL). Update: ganti tag, uji, commit, lalu redeploy.
+    image: gtstef/filebrowser:1.5.8-stable
     # Memakai config bawaan image: source /srv, login password, signup mati.
     # (Bind mount ./config.yaml dari repo tidak berisi file aslinya saat di-deploy Coolify.)
     restart: unless-stopped
