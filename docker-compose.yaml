@@ -9,10 +9,10 @@ services:
     # Memakai config bawaan image: source /srv, login password, signup mati.
     # (Bind mount ./config.yaml dari repo tidak berisi file aslinya saat di-deploy Coolify.)
     restart: unless-stopped
-    ports:
-      - "8080"
+    expose:
+      - "80"
     environment:
-      # Coolify: domain dipetakan ke port 80 container
+      # Coolify routes the domain to container port 80; expose it internally only.
       - SERVICE_FQDN_FILEBROWSER_80
       # Password admin dari Environment Variables Coolify (JANGAN ditulis di repo).
       # Direset ke nilai ini setiap start, jadi kalau lupa cukup lihat/ganti di Coolify lalu restart.

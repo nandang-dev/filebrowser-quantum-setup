@@ -43,7 +43,9 @@ mati. Tidak ada file config di repo, karena bind mount file relatif (`./config.y
 2. **New Resource → Docker Compose** → pilih repo ini (branch default) → Save.
 3. **Environment Variables**: isi `FILEBROWSER_ADMIN_PASSWORD` (disarankan min. 12 karakter). Simpan juga di password manager.
 4. **Domain**: di pengaturan service `filebrowser`, isi `https://files.bagdja.com:80`
-   (`:80` = port di dalam container, tidak muncul di browser). DNS `A files → IP VPS` harus sudah aktif.
+   (`:80` = port internal container yang dituju proxy Coolify, tidak muncul di browser).
+   Compose mendeklarasikan port ini dengan `expose: 80`; jangan gunakan `ports:` untuk mem-publish port host,
+   karena port 80/443 host dipakai proxy Coolify. DNS `A files → IP VPS` harus sudah aktif.
 5. **Deploy**. Status harus *Running (healthy)*. Buka `https://files.bagdja.com`, login `admin` + password langkah 3.
 
 ### Lupa password admin
