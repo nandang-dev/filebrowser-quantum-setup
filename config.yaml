@@ -1,0 +1,79 @@
+server:
+  port: 80
+  baseURL: "/files"
+  logging:
+    - levels: "info|warning|error"
+  sources:
+    - path: "/srv"
+auth:
+  methods:
+    password:
+      enabled: true
+      minLength: 5
+      signup: false
+    passkey:
+      enabled: false
+userDefaults:
+  sidebar:
+    disableQuickToggles: false
+    hideFileActions: false
+    disableHideOnPreview: false
+    sticky: true
+    hideFiles: false
+    showTools: true
+  listing:
+    deleteWithoutConfirming: false
+    dateFormat: false
+    showHidden: false
+    quickDownload: false
+    showSelectMultiple: false
+    singleClick: false
+    hideFileExt: ""
+    showCopyPath: false
+    deleteAfterArchive: true
+    viewMode: "normal"
+    gallerySize: 3
+  preview:
+    image: true
+    video: true
+    audio: true
+    motionVideoPreview: true
+    office: true
+    popup: true
+    disablePreviewExt: ""
+    highQuality: true
+    folder: true
+    models: true
+  fileViewer:
+    editorQuickSave: false
+    autoplayMedia: true
+    disableViewingExt: ""
+    disableOnlyOfficeExt: ".md .txt .pdf .html .xml"
+    preferEditorForMarkdown: false
+    debugOffice: false
+    defaultMediaPlayer: false
+  search:
+    disableOptions: false
+  ui:
+    darkMode: true
+    themeColor: "var(--blue)"
+    customTheme: ""
+    locale: "en"
+  fileLoading:
+    maxConcurrentUpload: 10
+    uploadChunkSizeMb: 10
+    downloadChunkSizeMb: 0
+  account:
+    permissions:
+      api: false
+      admin: false
+      modify: false
+      share: false
+      realtime: false
+      delete: false
+      create: false
+      download: true
+    lockPassword: false
+    disableSettings: false
+    loginMethod: "password"
+    disableUpdateNotifications: false

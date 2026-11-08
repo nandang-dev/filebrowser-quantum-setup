@@ -6,11 +6,16 @@ services:
     # Versi DIKUNCI: tag `stable` sudah pindah ke v2 (format config & env berbeda,
     # FILEBROWSER_DATABASE ditolak → FATAL). Update: ganti tag, uji, commit, lalu redeploy.
     image: gtstef/filebrowser:1.5.8-stable
-    # Memakai config bawaan image: source /srv, login password, signup mati.
-    # (Bind mount ./config.yaml dari repo tidak berisi file aslinya saat di-deploy Coolify.)
+    # Config v1.5.x in the repo keeps the default /srv source and sets the /files base path.
     restart: unless-stopped
     expose:
       - "80"
+    volumes:
+      - ./config.yaml:/home/filebrowser/data/config.yaml:ro
+      # Folder model yang sama di-mount READ-ONLY ke Stack Inspection API (/app/models)
+      - ${MODELS_HOST_DIR:-/data/stack-inspection/models}:/srv
+      # Database akun & pengaturan FileBrowser
+      - ${FILEBROWSER_DB_HOST_DIR:-/data/filebrowser-quantum}:/home/filebrowser/db
     environment:
       # Coolify routes the domain to container port 80; expose it internally only.
       - SERVICE_FQDN_FILEBROWSER_80
@@ -18,13 +23,8 @@ services:
       # Direset ke nilai ini setiap start, jadi kalau lupa cukup lihat/ganti di Coolify lalu restart.
       - FILEBROWSER_ADMIN_PASSWORD=${FILEBROWSER_ADMIN_PASSWORD:?isi FILEBROWSER_ADMIN_PASSWORD di Coolify}
       - FILEBROWSER_DATABASE=/home/filebrowser/db/database.db
-    volumes:
-      # Folder model yang sama di-mount READ-ONLY ke Stack Inspection API (/app/models)
-      - ${MODELS_HOST_DIR:-/data/stack-inspection/models}:/srv
-      # Database akun & pengaturan FileBrowser
-      - ${FILEBROWSER_DB_HOST_DIR:-/data/filebrowser-quantum}:/home/filebrowser/db
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/files/health"]
       interval: 30s
       timeout: 5s
       retries: 3

@@ -17,20 +17,21 @@ Web file manager untuk meng-upload dan mengelola file model deteksi (`.onnx`) ya
 
 | File | Isi |
 |---|---|
-| `docker-compose.yaml` | Service `filebrowser`, volume folder model + database, health check |
+| `docker-compose.yaml` | Service `filebrowser`, config + volume folder model + database, health check |
+| `config.yaml` | Konfigurasi v1.5.x; set `server.baseURL` ke `/files` |
 | `.env.example` | Variabel untuk menjalankan lokal |
 
 Image **dikunci ke `gtstef/filebrowser:1.5.8-stable`**. Jangan pakai tag `stable`: sejak 9 Okt 2026 tag itu
 menunjuk ke v2, yang menolak env `FILEBROWSER_DATABASE` (`[FATAL] FILEBROWSER_DATABASE environment variable is
 deprecated`) dan memakai format config berbeda.
 
-Konfigurasi memakai **config bawaan image**: satu source `/srv`, login password, pendaftaran akun
-mati. Tidak ada file config di repo, karena bind mount file relatif (`./config.yaml`) di Coolify ter-mount
-**kosong** sehingga FileBrowser gagal start (`Settings.Server.Sources ... required`).
+Konfigurasi di [config.yaml](./config.yaml) mempertahankan setelan default image v1.5.x dan mengatur
+`server.baseURL: /files` agar aset dan API bekerja di subpath tersebut. Compose me-mount file ini
+ke `/home/filebrowser/data/config.yaml` (lokasi config default image) dan mengecek health di `/files/health`.
+Jangan gunakan mount file yang dibuat manual di menu Persistent Storage Coolify: file mount tersebut
+sebelumnya ter-mount kosong dan membuat FileBrowser gagal start (`Settings.Server.Sources ... required`).
 
-> Jika nanti butuh kustomisasi, gunakan format config **v1.5.x** (lihat `backend/config.yaml` pada tag
-> `v1.5.6-stable` upstream), bukan format v2 (beta) di dokumentasi online. Pasang lewat fitur file mount
-> Coolify (Persistent Storage → File Mount) agar isinya benar-benar ikut.
+> Gunakan format config **v1.5.x** ini dengan image `1.5.8-stable`; format konfigurasi v2 berbeda.
 
 ## Deploy di Coolify
 
@@ -42,11 +43,11 @@ mati. Tidak ada file config di repo, karena bind mount file relatif (`./config.y
    FileBrowser berjalan sebagai user `1000`; tanpa langkah ini muncul `permission denied`.
 2. **New Resource → Docker Compose** → pilih repo ini (branch default) → Save.
 3. **Environment Variables**: isi `FILEBROWSER_ADMIN_PASSWORD` (disarankan min. 12 karakter). Simpan juga di password manager.
-4. **Domain**: di pengaturan service `filebrowser`, isi `https://files.bagdja.com:80`
+4. **Domain**: di pengaturan service `filebrowser`, isi `https://vision.enerren.com/files:80`
    (`:80` = port internal container yang dituju proxy Coolify, tidak muncul di browser).
    Compose mendeklarasikan port ini dengan `expose: 80`; jangan gunakan `ports:` untuk mem-publish port host,
-   karena port 80/443 host dipakai proxy Coolify. DNS `A files → IP VPS` harus sudah aktif.
-5. **Deploy**. Status harus *Running (healthy)*. Buka `https://files.bagdja.com`, login `admin` + password langkah 3.
+   karena port 80/443 host dipakai proxy Coolify. DNS `A vision → IP VPS` harus sudah aktif.
+5. **Deploy**. Status harus *Running (healthy)*. Buka `https://vision.enerren.com/files`, login `admin` + password langkah 3.
 
 ### Lupa password admin
 
