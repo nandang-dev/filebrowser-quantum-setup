@@ -2,16 +2,15 @@
 # Deploy di Coolify: New Resource → Docker Compose → repo ini. Lihat README.md.
 services:
   filebrowser:
-    # Image resmi (https://github.com/gtsteffaniak/filebrowser, Apache-2.0).
-    # Versi DIKUNCI: tag `stable` sudah pindah ke v2 (format config & env berbeda,
-    # FILEBROWSER_DATABASE ditolak → FATAL). Update: ganti tag, uji, commit, lalu redeploy.
-    image: gtstef/filebrowser:1.5.8-stable
-    # Config v1.5.x in the repo keeps the default /srv source and sets the /files base path.
+    # Build the v1.5.8 image with the subpath config baked in; avoid host file mounts.
+    image: filebrowser-quantum:1.5.8-files
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     expose:
       - "80"
     volumes:
-      - ./config.yaml:/home/filebrowser/data/config.yaml:ro
       # Folder model yang sama di-mount READ-ONLY ke Stack Inspection API (/app/models)
       - ${MODELS_HOST_DIR:-/data/stack-inspection/models}:/srv
       # Database akun & pengaturan FileBrowser

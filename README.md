@@ -17,7 +17,8 @@ Web file manager untuk meng-upload dan mengelola file model deteksi (`.onnx`) ya
 
 | File | Isi |
 |---|---|
-| `docker-compose.yaml` | Service `filebrowser`, config + volume folder model + database, health check |
+| `Dockerfile` | Build image FileBrowser dengan konfigurasi subpath di dalam image |
+| `docker-compose.yaml` | Service `filebrowser`, volume folder model + database, health check |
 | `config.yaml` | Konfigurasi v1.5.x; set `server.baseURL` ke `/files` |
 | `.env.example` | Variabel untuk menjalankan lokal |
 
@@ -26,10 +27,9 @@ menunjuk ke v2, yang menolak env `FILEBROWSER_DATABASE` (`[FATAL] FILEBROWSER_DA
 deprecated`) dan memakai format config berbeda.
 
 Konfigurasi di [config.yaml](./config.yaml) mempertahankan setelan default image v1.5.x dan mengatur
-`server.baseURL: /files` agar aset dan API bekerja di subpath tersebut. Compose me-mount file ini
-ke `/home/filebrowser/data/config.yaml` (lokasi config default image) dan mengecek health di `/files/health`.
-Jangan gunakan mount file yang dibuat manual di menu Persistent Storage Coolify: file mount tersebut
-sebelumnya ter-mount kosong dan membuat FileBrowser gagal start (`Settings.Server.Sources ... required`).
+`server.baseURL: /files` agar aset dan API bekerja di subpath tersebut. [Dockerfile](./Dockerfile)
+memasukkan config itu ke `/home/filebrowser/data/config.yaml` saat image dibangun, menghindari bind mount
+file config dari host yang dapat berubah menjadi direktori jika file sumber tidak tersedia.
 
 > Gunakan format config **v1.5.x** ini dengan image `1.5.8-stable`; format konfigurasi v2 berbeda.
 
@@ -46,7 +46,8 @@ sebelumnya ter-mount kosong dan membuat FileBrowser gagal start (`Settings.Serve
 4. **Domain**: di pengaturan service `filebrowser`, isi `https://vision.enerren.com/files:80`
    (`:80` = port internal container yang dituju proxy Coolify, tidak muncul di browser).
    Compose mendeklarasikan port ini dengan `expose: 80`; jangan gunakan `ports:` untuk mem-publish port host,
-   karena port 80/443 host dipakai proxy Coolify. DNS `A vision → IP VPS` harus sudah aktif.
+   karena port 80/443 host dipakai proxy Coolify. Pastikan Docker Compose resource Coolify membangun ulang
+   image dari repo ini saat deploy. DNS `A vision → IP VPS` harus sudah aktif.
 5. **Deploy**. Status harus *Running (healthy)*. Buka `https://vision.enerren.com/files`, login `admin` + password langkah 3.
 
 ### Lupa password admin
