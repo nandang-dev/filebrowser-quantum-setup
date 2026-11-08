@@ -20,7 +20,11 @@ Web file manager untuk meng-upload dan mengelola file model deteksi (`.onnx`) ya
 | `docker-compose.yaml` | Service `filebrowser`, volume folder model + database, health check |
 | `.env.example` | Variabel untuk menjalankan lokal |
 
-Konfigurasi memakai **config bawaan image** `stable`: satu source `/srv`, login password, pendaftaran akun
+Image **dikunci ke `gtstef/filebrowser:1.5.8-stable`**. Jangan pakai tag `stable`: sejak 9 Okt 2026 tag itu
+menunjuk ke v2, yang menolak env `FILEBROWSER_DATABASE` (`[FATAL] FILEBROWSER_DATABASE environment variable is
+deprecated`) dan memakai format config berbeda.
+
+Konfigurasi memakai **config bawaan image**: satu source `/srv`, login password, pendaftaran akun
 mati. Tidak ada file config di repo, karena bind mount file relatif (`./config.yaml`) di Coolify ter-mount
 **kosong** sehingga FileBrowser gagal start (`Settings.Server.Sources ... required`).
 
@@ -72,6 +76,12 @@ Jangan hapus model lama sebelum model baru terbukti baik (rollback = kembalikan 
 - Batasi akses ke IP kantor/VPN jika memungkinkan (firewall VPS / pengaturan proxy Coolify).
 - FileBrowser hanya melihat folder model (`/srv`), tidak ke folder lain di server.
 
+### Upgrade ke v2 (belum dilakukan)
+
+Butuh pekerjaan terpisah: hapus env `FILEBROWSER_DATABASE`, siapkan config format v2 lewat File Mount Coolify
+dengan `server.database` mengarah ke volume `/home/filebrowser/db` dan `server.database.migrateFrom` agar
+database v1.5 (akun, 2FA) ikut dimigrasi. Uji lokal dulu dengan salinan database.
+
 ## Menjalankan lokal (opsional)
 
 ```sh
@@ -83,6 +93,6 @@ Di Mac (Colima/Docker Desktop), folder host harus berada di bawah `/Users/...` s
 
 ## Status pengujian
 
-Diuji lokal (Colima) dengan `gtstef/filebrowser:stable` v1.5.x: container *healthy*, login admin dari env
+Diuji lokal (Colima) dengan `gtstef/filebrowser:stable` (saat itu v1.5.x): container *healthy*, login admin dari env
 berhasil (200), password salah ditolak (401), folder `carton-v1` terlihat di `/srv`. Di Coolify, mount
 `./config.yaml` ternyata kosong → config file dihapus, memakai config bawaan image.
